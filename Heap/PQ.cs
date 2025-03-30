@@ -150,7 +150,7 @@ namespace Algorithms.Heap
 
             TopDownHeapify(0);
             pq[n] = default(K);
-            Console.WriteLine(ToTree());
+            //Console.WriteLine(ToTree());
             return key;
         }
 

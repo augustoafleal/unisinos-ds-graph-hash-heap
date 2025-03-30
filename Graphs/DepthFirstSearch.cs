@@ -9,6 +9,7 @@ public class DepthFirstSearch
     
     private Vertex[] _vertices;
     private int _time;
+    public List<Vertex> Order { get; set; } = new List<Vertex>();
     
     public Vertex[] Execute(Graph g, int s)
     {
@@ -19,7 +20,6 @@ public class DepthFirstSearch
             _vertices[i] = new Vertex(i, Color.WHITE);
         }
         
-  
         _time = 0;
 
         for (var i = 0; i < g.V; i++)
@@ -38,12 +38,12 @@ public class DepthFirstSearch
         _time += 1;
         _vertices[i].Distance = _time;
         _vertices[i].Color = Color.GRAY;
-        Console.WriteLine($"Working with {_vertices[i].V}");
+        //Console.WriteLine($"Working with {_vertices[i].V}");
         foreach (var v in g.Adj(_vertices[i].V).OrderBy(x => x))
         {
             if (_vertices[v].Color == Color.WHITE)
             {   
-                Console.WriteLine($"Adjacency with {_vertices[v].V}");
+                //Console.WriteLine($"Adjacency with {_vertices[v].V}");
                 _vertices[v].Predecessor = _vertices[i].V; 
                 ExecuteVisit(g, _vertices[v].V);
             }
@@ -52,7 +52,8 @@ public class DepthFirstSearch
         _vertices[i].Color = Color.BLACK;
         _time += 1;
         _vertices[i].FinishTime = _time;
-        Console.WriteLine($"Painting black: {_vertices[i].V}");
+        Order.Insert(0, _vertices[i]);
+        //Console.WriteLine($"Painting black: {_vertices[i].V}");
 
     }
 

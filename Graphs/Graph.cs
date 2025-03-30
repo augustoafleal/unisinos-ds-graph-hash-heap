@@ -57,7 +57,7 @@ public abstract class Graph
         }
     }
 
-    public new string ToString()
+    public override string ToString()
     {
         StringBuilder sb = new StringBuilder("\n");
         for (int i = 0; i < V; i++)
