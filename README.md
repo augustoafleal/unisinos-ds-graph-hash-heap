@@ -210,3 +210,179 @@ foreach (var edge in queue)
 }
 Console.WriteLine(prim.Weight);
 ```
+
+## Example
+
+**Graph**
+
+![](/img/graph1.jpg)
+
+```c#
+WeightedGraph wg = new WeightedGraph(12);
+wg.AddEdge(new Edge(0, 1, 3));
+wg.AddEdge(new Edge(0, 2, 7));
+wg.AddEdge(new Edge(0, 9, 10));
+wg.AddEdge(new Edge(1, 2, 11));
+wg.AddEdge(new Edge(1, 3, 9));
+wg.AddEdge(new Edge(2, 5, 23));
+wg.AddEdge(new Edge(1, 4, 15));
+wg.AddEdge(new Edge(3, 5, 13));
+wg.AddEdge(new Edge(4, 7, 19));
+wg.AddEdge(new Edge(5, 4, 21));
+wg.AddEdge(new Edge(5, 7, 29));
+wg.AddEdge(new Edge(5, 8, 33));
+wg.AddEdge(new Edge(6, 4, 17));
+wg.AddEdge(new Edge(6, 7, 25));
+wg.AddEdge(new Edge(7, 8, 31));
+wg.AddEdge(new Edge(8, 6, 27));
+wg.AddEdge(new Edge(8, 10, 2));
+wg.AddEdge(new Edge(9, 10, 4));
+wg.AddEdge(new Edge(10, 11, 9));
+wg.AddEdge(new Edge(11, 5, 8));
+
+Console.WriteLine(wg.ToString());
+
+Prim prim = new Prim(wg, 0);
+var queue = prim.Mst;
+foreach (var edge in queue)
+{
+    Console.WriteLine(edge.ToString());
+}
+Console.WriteLine(prim.Weight);
+
+Kruskal kruskal = new Kruskal(wg);
+var queue = kruskal.Mst;
+foreach (var edge in queue)
+{
+    Console.WriteLine(edge.ToString());
+}
+Console.WriteLine(kruskal.Weight);
+```
+
+# Graph Shortest Path
+
+## Dijkstra
+
+![](/img/graph2.png)
+
+```c#
+WeightedDirectedGraph graph = new WeightedDirectedGraph(5);
+graph.AddEdge(new DirectedEdge(0, 1, 10));
+graph.AddEdge(new DirectedEdge(0, 2, 5));
+graph.AddEdge(new DirectedEdge(1, 2, 2));
+graph.AddEdge(new DirectedEdge(1, 3, 1));
+graph.AddEdge(new DirectedEdge(2, 1, 3));
+graph.AddEdge(new DirectedEdge(2, 3, 9));
+graph.AddEdge(new DirectedEdge(2, 4, 2));
+graph.AddEdge(new DirectedEdge(3, 4, 4));
+graph.AddEdge(new DirectedEdge(4, 0, 7));
+graph.AddEdge(new DirectedEdge(4, 3, 6));
+Console.WriteLine(graph);
+
+Dijkstra dijkstra = new Dijkstra(graph, 0);
+int destination = 3;
+foreach (var each in dijkstra.PathTo(destination))
+{
+    Console.Write($"{each} ");
+}
+
+Console.WriteLine($"Distance: {dijkstra.Distance(destination)}");
+```
+
+## Bellman-Ford
+
+- Without negative cycles
+
+![](/img/graph3.png)
+
+```c#
+WeightedDirectedGraph graph = new WeightedDirectedGraph(5);
+graph.AddEdge(new DirectedEdge(0, 1, 6));
+graph.AddEdge(new DirectedEdge(0, 2, 7));
+graph.AddEdge(new DirectedEdge(1, 2, 8));
+graph.AddEdge(new DirectedEdge(1, 4, -4));
+graph.AddEdge(new DirectedEdge(2, 3, -3));
+graph.AddEdge(new DirectedEdge(3, 1, -2));
+graph.AddEdge(new DirectedEdge(4, 3, 7));
+Console.WriteLine(graph);
+
+BellmanFord bellmanFord = new BellmanFord();
+int destination = 4;
+if (bellmanFord.Execute(graph, 0))
+{
+    foreach (var each in bellmanFord.PathTo(destination))
+    {
+        Console.Write($"{each} ");
+    }
+
+    Console.WriteLine($"Distance: {bellmanFord.Distance(destination)}");
+}
+else
+{
+    Console.WriteLine("[Error] Negative cycles");
+}
+```
+
+- Trying negative cycles (should give an **error**)
+
+![](/img/graph4.png)
+
+```c#
+WeightedDirectedGraph graph = new WeightedDirectedGraph(5);
+graph.AddEdge(new DirectedEdge(0, 2, 7));
+graph.AddEdge(new DirectedEdge(1, 0, -6));
+graph.AddEdge(new DirectedEdge(1, 2, 8));
+graph.AddEdge(new DirectedEdge(1, 4, -4));
+graph.AddEdge(new DirectedEdge(2, 3, -3));
+graph.AddEdge(new DirectedEdge(3, 1, -2));
+graph.AddEdge(new DirectedEdge(4, 3, 7));
+Console.WriteLine(graph);
+
+BellmanFord bellmanFord = new BellmanFord();
+int destination = 3;
+if (bellmanFord.Execute(graph, 0))
+{
+    foreach (var each in bellmanFord.PathTo(destination))
+    {
+        Console.Write($"{each} ");
+    }
+
+    Console.WriteLine($"Distance: {bellmanFord.Distance(destination)}");
+}
+else
+{
+    Console.WriteLine("[Error] Negative cycles");
+}
+```
+
+# Topological Sort
+
+![](/img/graph5.png)
+![](/img/graph6.png)
+
+
+```c#
+string[] pecas =
+        { "cueca", "calça", "cinto", "camisa", "gravata", "paletó", "meias", "sapatos", "relógio" };
+            
+DirectedGraph graph = new DirectedGraph(9);
+graph.AddEdge(0, 1);
+graph.AddEdge(1, 2);
+graph.AddEdge(0, 7);
+graph.AddEdge(1, 7);
+graph.AddEdge(1, 2);
+graph.AddEdge(6, 7);
+graph.AddEdge(3, 2);
+graph.AddEdge(3, 4);
+graph.AddEdge(4, 5);
+graph.AddEdge(2, 8);
+graph.AddEdge(8, 5);
+Console.WriteLine(graph);
+
+TopologicalSort.TopologicalSort tr = new TopologicalSort.TopologicalSort(graph, 0);
+
+foreach (var vertex in tr.Order)
+{
+    Console.WriteLine($"{pecas[vertex.V]}: ({vertex.Distance} / {vertex.FinishTime})");
+}
+```
