@@ -360,7 +360,6 @@ else
 ![](/img/graph5.png)
 ![](/img/graph6.png)
 
-
 ```c#
 string[] pecas =
         { "cueca", "calça", "cinto", "camisa", "gravata", "paletó", "meias", "sapatos", "relógio" };
@@ -384,5 +383,109 @@ TopologicalSort.TopologicalSort tr = new TopologicalSort.TopologicalSort(graph, 
 foreach (var vertex in tr.Order)
 {
     Console.WriteLine($"{pecas[vertex.V]}: ({vertex.Distance} / {vertex.FinishTime})");
+}
+```
+
+# Connected Component
+
+![](/img/graph7.png)
+
+```c#
+Graph graph = new UndirectedGraph(4);
+graph.AddEdge(0, 1);
+graph.AddEdge(1, 2);
+
+Console.WriteLine(graph);
+
+ConnectedComponent cc = new ConnectedComponent(graph);
+
+int m = cc.Count;
+Console.WriteLine($"Components: {m}");
+
+Queue<int>[] q = new Queue<int>[m];
+
+for (int i = 0; i < m; i++)
+{
+    q[i] = new Queue<int>();
+}
+
+for (int i = 0; i < graph.V; i++)
+{
+    q[cc.GetIdByPosition(i)].Enqueue(i);
+}
+
+for (int i = 0; i < m; i++)
+{
+    foreach (var component in q[i])
+    {
+        Console.Write($"{component} ");
+    }
+    Console.WriteLine();
+}
+```
+
+# Strongly Connected Component
+
+Before processed (using this [file](TopologicalSortAndConnectedComponent/graphScc.txt))
+
+![](/img/graph8.png)
+
+Result (5 strong components)
+
+![](/img/graph9.png)
+
+```c#
+string projectDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
+string filePath = Path.Combine(projectDirectory, "TopologicalSortAndConnectedComponent/graphScc.txt");
+
+if (File.Exists(filePath))
+{
+    string[] lines = File.ReadAllLines(filePath);
+    
+    DirectedGraph graph = new DirectedGraph(int.Parse(lines[0]));
+    
+    for (int i = 1; i < lines.Length; i++)
+    {
+        string[] parts = lines[i].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        
+        int v = int.Parse(parts[0]);
+        int w = int.Parse(parts[1]);
+        graph.AddEdge(v, w);
+    }
+    
+    Console.WriteLine(graph);
+    
+    StronglyConnectedComponent scc = new StronglyConnectedComponent();
+    Vertex[] vertices = scc.Execute(graph);
+    int components = scc.Components;
+    
+    
+    Console.WriteLine("Components: " + components);
+    Queue<int>[] listOfComponents = new Queue<int>[components];
+    
+    for (int i = 0; i < components; i++)
+    {
+        listOfComponents[i] = new Queue<int>();
+    }
+
+    foreach (var vertex in vertices)
+    {
+        int component = scc.VerticesComponents[vertex.V];
+        listOfComponents[component - 1].Enqueue(vertex.V);
+    }
+    
+    for (int i = 0; i < components; i++)
+    {
+        foreach (var v in listOfComponents[i])
+        {
+            Console.Write($"{v} ");
+        }
+        Console.WriteLine();
+    }
+   
+}
+else
+{
+    Console.WriteLine("File not found.");
 }
 ```

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Algorithms.GraphMst;
 using Algorithms.Graphs;
@@ -7,7 +9,7 @@ using Algorithms.GraphsShortestPath;
 using Algorithms.Hashs;
 using Algorithms.Heap;
 using Algorithms.Lists;
-using Algorithms.TopologicalSort;
+using Algorithms.TopologicalSortAndConnectedComponent;
 
 namespace Algorithms
 {
@@ -15,30 +17,61 @@ namespace Algorithms
     {
         static void Main(string[] args)
         {
-            string[] pecas =
-                { "cueca", "calça", "cinto", "camisa", "gravata", "paletó", "meias", "sapatos", "relógio" };
             
-            DirectedGraph graph = new DirectedGraph(9);
-            graph.AddEdge(0, 1);
-            graph.AddEdge(1, 2);
-            graph.AddEdge(0, 7);
-            graph.AddEdge(1, 7);
-            graph.AddEdge(1, 2);
-            graph.AddEdge(6, 7);
-            graph.AddEdge(3, 2);
-            graph.AddEdge(3, 4);
-            graph.AddEdge(4, 5);
-            graph.AddEdge(2, 8);
-            graph.AddEdge(8, 5);
-            Console.WriteLine(graph);
+            string projectDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
+            string filePath = Path.Combine(projectDirectory, "TopologicalSortAndConnectedComponent/graphScc.txt");
             
-            TopologicalSort.TopologicalSort tr = new TopologicalSort.TopologicalSort(graph, 0);
-
-            foreach (var vertex in tr.Order)
+            if (File.Exists(filePath))
             {
-                Console.WriteLine($"{pecas[vertex.V]}: ({vertex.Distance} / {vertex.FinishTime})");
+                string[] lines = File.ReadAllLines(filePath);
+                
+                DirectedGraph graph = new DirectedGraph(int.Parse(lines[0]));
+                
+                for (int i = 1; i < lines.Length; i++)
+                {
+                    string[] parts = lines[i].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    
+                    int v = int.Parse(parts[0]);
+                    int w = int.Parse(parts[1]);
+                    graph.AddEdge(v, w);
+                }
+                
+                Console.WriteLine(graph);
+                
+                StronglyConnectedComponent scc = new StronglyConnectedComponent();
+                Vertex[] vertices = scc.Execute(graph);
+                int components = scc.Components;
+                
+                
+                Console.WriteLine("Components: " + components);
+                Queue<int>[] listOfComponents = new Queue<int>[components];
+                
+                for (int i = 0; i < components; i++)
+                {
+                    listOfComponents[i] = new Queue<int>();
+                }
+
+                foreach (var vertex in vertices)
+                {
+                    int component = scc.VerticesComponents[vertex.V];
+                    listOfComponents[component - 1].Enqueue(vertex.V);
+                }
+                
+                for (int i = 0; i < components; i++)
+                {
+                    foreach (var v in listOfComponents[i])
+                    {
+                        Console.Write($"{v} ");
+                    }
+                    Console.WriteLine();
+                }
+               
             }
+            else
+            {
+                Console.WriteLine("File not found.");
+            }
+            
         }
     }
 }
-
