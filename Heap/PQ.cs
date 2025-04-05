@@ -145,6 +145,7 @@ namespace Algorithms.Heap
             {
                 throw new InvalidOperationException("Priority queue is empty");
             }
+            
             K key = pq[0];
             Exchange(0, --n);
 
