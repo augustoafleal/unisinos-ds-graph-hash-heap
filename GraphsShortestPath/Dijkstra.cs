@@ -11,7 +11,7 @@ public class Dijkstra
 {
     public PQ<Vertex> Pq { get; set; } = new MinPQ<Vertex>();
     public Vertex[] Vertices { get; set; }
-
+    
     public Dijkstra(WeightedDirectedGraph graph, int s)
     {
         foreach (var edge in graph.Edges())
@@ -20,8 +20,9 @@ public class Dijkstra
             {
                 throw new ArgumentNullException($"Edge {edge} must have weight greater than 0");
             }
+        }
 
-            InitializeSingleSource(graph, s);
+        InitializeSingleSource(graph, s);
 
             foreach (var vertex in Vertices)
             {
@@ -35,7 +36,7 @@ public class Dijkstra
                 {
                     Relax(edgeAdj);
                 }
-            }
+
         }
     }
 

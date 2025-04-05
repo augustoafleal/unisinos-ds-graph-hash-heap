@@ -17,61 +17,81 @@ namespace Algorithms
     {
         static void Main(string[] args)
         {
-            
-            string projectDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
-            string filePath = Path.Combine(projectDirectory, "TopologicalSortAndConnectedComponent/graphScc.txt");
-            
+                  string[] capitals =
+            {
+                "AP - Macapá",
+                "RS - Porto Alegre",
+                "SC - Florianópolis",
+                "PR - Curitiba",
+                "SP - São Paulo",
+                "RJ - Rio de Janeiro",
+                "ES - Vitória",
+                "MG - Belo Horizonte",
+                "MS - Campo Grande",
+                "MT - Cuiabá",
+                "GO - Goiânia",
+                "DF - Brasília",
+                "BA - Salvador",
+                "SE - Aracaju",
+                "AL - Maceió",
+                "PE - Recife",
+                "PB - João Pessoa",
+                "RN - Natal",
+                "CE - Fortaleza",
+                "PI - Teresina",
+                "MA - São Luís",
+                "TO - Palmas",
+                "RO - Porto Velho",
+                "AC - Rio Branco",
+                "AM - Manaus",
+                "RR - Boa Vista",
+                "PA - Belém"
+            };
+
+            string projectDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent
+                .FullName;
+            string filePath = Path.Combine(projectDirectory, "GraphsShortestPath/graphCapitals.txt");
+
             if (File.Exists(filePath))
             {
                 string[] lines = File.ReadAllLines(filePath);
-                
-                DirectedGraph graph = new DirectedGraph(int.Parse(lines[0]));
-                
+
+                WeightedDirectedGraph graph = new WeightedDirectedGraph(int.Parse(lines[0]));
+
                 for (int i = 1; i < lines.Length; i++)
                 {
                     string[] parts = lines[i].Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    
+
                     int v = int.Parse(parts[0]);
                     int w = int.Parse(parts[1]);
-                    graph.AddEdge(v, w);
-                }
-                
-                Console.WriteLine(graph);
-                
-                StronglyConnectedComponent scc = new StronglyConnectedComponent();
-                Vertex[] vertices = scc.Execute(graph);
-                int components = scc.Components;
-                
-                
-                Console.WriteLine("Components: " + components);
-                Queue<int>[] listOfComponents = new Queue<int>[components];
-                
-                for (int i = 0; i < components; i++)
-                {
-                    listOfComponents[i] = new Queue<int>();
+                    int weight = int.Parse(parts[2]);
+                    graph.AddEdge(new DirectedEdge(v, w, weight));
                 }
 
-                foreach (var vertex in vertices)
+                int source = 12;
+                Dijkstra dijkstra = new Dijkstra(graph, source);
+
+                Console.WriteLine($"> Listando caminhos e distâncias a partir da capital: {capitals[source]}");
+
+                for (int i = 0; i < graph.V; i++)
                 {
-                    int component = scc.VerticesComponents[vertex.V];
-                    listOfComponents[component - 1].Enqueue(vertex.V);
-                }
-                
-                for (int i = 0; i < components; i++)
-                {
-                    foreach (var v in listOfComponents[i])
+                    int destination = i;
+                    foreach (var each in dijkstra.PathTo(destination))
                     {
-                        Console.Write($"{v} ");
+                        Console.Write($"[{each} {capitals[each]}]");
+                        if (each != destination)
+                        {
+                            Console.Write(" -> ");
+                        }
+                        else
+                        {
+                            Console.Write(" ");
+                        }
                     }
-                    Console.WriteLine();
+
+                    Console.WriteLine($" | Distance: {dijkstra.Distance(destination)} km");
                 }
-               
             }
-            else
-            {
-                Console.WriteLine("File not found.");
-            }
-            
         }
     }
 }
